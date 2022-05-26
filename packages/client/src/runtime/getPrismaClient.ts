@@ -46,7 +46,7 @@ declare global {
 }
 
 // used by esbuild for tree-shaking
-NOT_EDGE_CLIENT = true
+globalThis.NOT_EDGE_CLIENT = true
 
 function isReadonlyArray(arg: any): arg is ReadonlyArray<any> {
   return Array.isArray(arg)
