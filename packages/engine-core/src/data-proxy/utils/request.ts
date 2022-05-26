@@ -1,27 +1,19 @@
-import type { IncomingMessage } from 'http'
-import type _https from 'https'
+import { IncomingMessage } from 'http'
+import type Https from 'https'
+import type { RequestInit, Response } from 'node-fetch'
+import { O } from 'ts-toolbelt'
 
 import { getJSRuntimeName } from './getJSRuntimeName'
 
-// our implementation handles less than the real fetch
-export type RequestOptions = {
-  headers?: { [k: string]: string }
-  body?: string
-  method?: string
-}
+// our implementation handles less
+export type RequestOptions = O.Patch<{ headers?: { [k: string]: string }; body?: string }, RequestInit>
+export type RequestResponse = O.Required<O.Optional<Response>, 'json' | 'url' | 'ok' | 'status'>
 
-// our implementation handles less than the real fetch
-export type RequestResponse = {
-  json(): Promise<any>
-  readonly url: string
-  readonly ok: boolean
-  readonly status: number
-}
-
+// fetch is global on edge runtime
 declare let fetch: typeof nodeFetch
 
 /**
- * Isomorphic `fetch` that imitates `fetch` via `http` when on Node.js.
+ * Isomorphic `fetch` that imitates `fetch` via `https` when on Node.js.
  * @param url
  * @param options
  * @returns
@@ -43,8 +35,7 @@ export async function request(url: string, options: RequestOptions = {}): Promis
  */
 function buildHeaders(options: RequestOptions): RequestOptions['headers'] {
   return {
-    // this ensures headers will always be valid
-    ...JSON.parse(JSON.stringify(options.headers)),
+    ...options.headers,
     'Content-Type': 'application/json',
   }
 }
@@ -54,7 +45,7 @@ function buildHeaders(options: RequestOptions): RequestOptions['headers'] {
  * @param options
  * @returns
  */
-function buildOptions(options: RequestOptions): _https.RequestOptions {
+function buildOptions(options: RequestOptions): Https.RequestOptions {
   return {
     method: options.method,
     headers: buildHeaders(options),
@@ -84,13 +75,12 @@ function buildResponse(incomingData: Buffer[], response: IncomingMessage): Reque
  * @param options
  * @returns
  */
-function nodeFetch(url: string, options: RequestOptions = {}): Promise<RequestResponse> {
+async function nodeFetch(url: string, options: RequestOptions = {}): Promise<RequestResponse> {
+  const https: typeof Https = await globalThis[['e', 'v', 'a', 'l'].join('')](`import('https')`)
   const httpsOptions = buildOptions(options)
   const incomingData = [] as Buffer[]
 
   return new Promise((resolve, reject) => {
-    const https: typeof _https = eval(`require('https')`)
-
     // we execute the https request and build a fetch response out of it
     const request = https.request(url, httpsOptions, (response) => {
       response.on('data', (chunk: Buffer) => incomingData.push(chunk))

@@ -15,7 +15,7 @@ type LoadedEnv = {
  * `fs`, `process.env`, and .env file loading are not available. The inline env
  * is the default fallback when `tryLoadEnvs` wasn't called by the client.
  * @see {@link declareInlineEnv}
- * @param clientEngineType
+ * @param dataProxy
  * @param datasources
  * @param envPaths
  * @returns

@@ -6,7 +6,7 @@ const readFile = fs.promises.readFile
 /**
  * Builds an inline schema for the data proxy client. This is useful because it
  * is designed to run in browser-like environments where `fs` is not available.
- * @param clientEngineType
+ * @param dataProxy
  * @param schemaPath
  * @returns
  */
