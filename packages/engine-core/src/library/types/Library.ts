@@ -1,3 +1,4 @@
+import type { EngineMetricsOptions } from '../../common/types/Metrics'
 import type { ConfigMetaFormat, GetConfigOptions, QueryEngineConfig } from '../../common/types/QueryEngine'
 
 export type ConnectArgs = {
@@ -16,6 +17,7 @@ export type QueryEngineInstance = {
   startTransaction(options: string, trace: string): Promise<string>
   commitTransaction(id: string, trace: string): Promise<string>
   rollbackTransaction(id: string, trace: string): Promise<string>
+  metrics(options: string): Promise<string>
 }
 
 export interface QueryEngineConstructor {

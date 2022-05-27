@@ -29,6 +29,7 @@ import { getErrorMessageWithLink } from '../common/errors/utils/getErrorMessageW
 import type { RustError, RustLog } from '../common/errors/utils/log'
 import { convertLog, getMessage, isRustError, isRustErrorLog } from '../common/errors/utils/log'
 import { prismaGraphQLToJSError } from '../common/errors/utils/prismaGraphQLToJSError'
+import { EngineMetricsOptions, Metric, MetricsOptionsJson, MetricsOptionsPrometheus } from '../common/types/Metrics'
 import type { QueryEngineRequestHeaders, QueryEngineResult } from '../common/types/QueryEngine'
 import type * as Tx from '../common/types/Transaction'
 import { printGeneratorConfig } from '../common/utils/printGeneratorConfig'
@@ -1089,6 +1090,12 @@ Please look into the logs or turn on the env var DEBUG=* to debug the constantly
     }
 
     return false
+  }
+
+  metrics(options: MetricsOptionsJson): Promise<Metric[]>
+  metrics(options: MetricsOptionsPrometheus): Promise<string>
+  metrics(options: EngineMetricsOptions): Promise<string> | Promise<Metric[]> {
+    throw new Error('Method not implemented.')
   }
 }
 
